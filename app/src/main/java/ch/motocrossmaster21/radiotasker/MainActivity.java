@@ -39,19 +39,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveConfig() {
-        String deviceName = deviceNameEditText.getText().toString();
-        String packageName = packageNameEditText.getText().toString();
+        String deviceName = deviceNameEditText.getText().toString().trim();
+        String packageName = packageNameEditText.getText().toString().trim();
+
         SharedPrefsUtil.setDeviceName(this, deviceName);
         SharedPrefsUtil.setPackageName(this, packageName);
         Toast.makeText(this, R.string.config_saved, Toast.LENGTH_SHORT).show();
-        Log.i(TAG, "Configuration saved: deviceName=" + deviceName + ", packageName=" + packageName);
+        Log.i(TAG, "Konfiguration gespeichert: deviceName=" + deviceName + ", packageName=" + packageName);
 
-        boolean pkgExists = SystemUtils.isPackageInstalled(this, packageName);
-        Log.i(TAG, "Package " + packageName + (pkgExists ? " is installed" : " not installed"));
+        // Paketstatus prüfen und loggen
+        boolean pkgExists = SystemUtils.isPackageInstalled(getApplicationContext(), packageName);
+        Log.i(TAG, "Paket " + packageName + (pkgExists ? " ist installiert" : " ist nicht installiert"));
+        if (!pkgExists && !packageName.isEmpty()) {
+            Toast.makeText(this, "Warnung: Das Paket '" + packageName + "' ist nicht installiert.", Toast.LENGTH_SHORT).show();
+        }
 
+        // Gerätestatus prüfen und loggen
         boolean deviceExists = SystemUtils.isPairedDevice(deviceName);
-        Log.i(TAG, "Device " + deviceName + (deviceExists ? " is paired" : " not paired"));
+        Log.i(TAG, "Gerät " + deviceName + (deviceExists ? " ist gekoppelt" : " ist nicht gekoppelt"));
+
+        if (!deviceExists && !deviceName.isEmpty()) {
+            String message = "Das Bluetooth-Gerät '" + deviceName + "' ist nicht gekoppelt. Bitte koppeln Sie es in den Bluetooth-Einstellungen.";
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "Warnung: Gerät '" + deviceName + "' ist nicht gekoppelt.");
+        }
     }
+
 
     private void requestPermissionsIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

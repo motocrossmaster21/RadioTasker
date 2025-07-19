@@ -23,6 +23,7 @@ public class RadioTaskerService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "Service created");
+        Log.d(TAG, "Service created");
         createNotificationChannel();
         startForeground(1, buildNotification());
         Log.d(TAG, "Foreground service started");
