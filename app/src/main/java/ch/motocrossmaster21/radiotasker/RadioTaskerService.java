@@ -7,20 +7,43 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import android.util.Log;
 
 public class RadioTaskerService extends Service {
     private static final String CHANNEL_ID = "RadioTasker";
+    private static final String TAG = "RadioTaskerService";
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "Service created");
         createNotificationChannel();
         startForeground(1, buildNotification());
+        Log.d(TAG, "Foreground service started");
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "Start command received");
         EnergyAppLauncher.launchApp(this);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            Log.d(TAG, "Stopping foreground service");
+            stopForeground(true);
+            stopSelf();
+        }, 2000);
+        return START_NOT_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "Service destroyed");
     }
 
     @Nullable
