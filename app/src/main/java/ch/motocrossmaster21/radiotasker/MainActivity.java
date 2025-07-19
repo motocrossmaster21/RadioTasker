@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.util.Log;
 import android.bluetooth.BluetoothDevice;
 import android.companion.CompanionDeviceManager;
 
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startPairing() {
         String deviceName = deviceNameEditText.getText().toString();
+        Log.d("MainActivity", "startPairing: " + deviceName);
         CompanionManager.associateDevice(this, deviceName);
     }
 
@@ -75,9 +77,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("MainActivity", "onActivityResult request=" + requestCode + " result=" + resultCode);
         if (requestCode == CompanionManager.ASSOCIATE_REQUEST && resultCode == RESULT_OK && data != null) {
             BluetoothDevice device = data.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE);
             if (device != null) {
+                Log.d("MainActivity", "Device selected: " + device.getName());
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
                         == PackageManager.PERMISSION_GRANTED) {
                     device.createBond();

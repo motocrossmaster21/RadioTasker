@@ -24,19 +24,26 @@ public class CompanionManager {
             Log.e(TAG, "CompanionDeviceManager not available");
             return;
         }
+
+        Log.d(TAG, "associateDevice called with name: " + deviceName);
+        Log.d(TAG, "Existing associations: " + cdm.getAssociations());
         BluetoothDeviceFilter filter = new BluetoothDeviceFilter.Builder()
                 .setNamePattern(Pattern.compile(Pattern.quote(deviceName)))
                 .build();
+        Log.d(TAG, "Building association request for pattern: " + deviceName);
         AssociationRequest request = new AssociationRequest.Builder()
                 .addDeviceFilter(filter)
                 .setSingleDevice(true)
                 .build();
+        Log.d(TAG, "Calling associate()");
         cdm.associate(request, new CompanionDeviceManager.Callback() {
             @Override
             public void onDeviceFound(IntentSender chooserLauncher) {
+                Log.d(TAG, "Device found, launching chooser");
                 try {
                     activity.startIntentSenderForResult(chooserLauncher, ASSOCIATE_REQUEST,
                             null, 0, 0, 0, null);
+                    Log.d(TAG, "Chooser launched");
                 } catch (IntentSender.SendIntentException e) {
                     Log.e(TAG, "Failed to launch chooser", e);
                 }
