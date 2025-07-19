@@ -28,6 +28,15 @@ public class RadioTaskerService extends Service {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "Start command received");
+        EnergyAppLauncher.launchApp(this);
+        stopForeground(true);
+        stopSelf();
+        return START_NOT_STICKY;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "Service destroyed");
