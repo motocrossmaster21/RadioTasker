@@ -1,7 +1,6 @@
 package ch.motocrossmaster21.radiotasker;
 
 import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import androidx.core.content.ContextCompat;
 public class MainActivity extends AppCompatActivity {
     private EditText deviceNameEditText;
     private EditText packageNameEditText;
-    private Button saveButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         deviceNameEditText = findViewById(R.id.deviceNameEditText);
         packageNameEditText = findViewById(R.id.packageNameEditText);
-        saveButton = findViewById(R.id.saveButton);
+        Button saveButton = findViewById(R.id.saveButton);
 
         deviceNameEditText.setText(SharedPrefsUtil.getDeviceName(this));
         packageNameEditText.setText(SharedPrefsUtil.getPackageName(this));
@@ -50,6 +48,13 @@ public class MainActivity extends AppCompatActivity {
                     != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // Android 14
+            if (checkSelfPermission(android.Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[] {
+                        android.Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE
+                }, 1002);
             }
         }
     }

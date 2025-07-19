@@ -13,6 +13,8 @@ import org.robolectric.Shadows;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowBluetoothDevice;
+import androidx.test.core.app.ApplicationProvider;
+
 
 import static org.junit.Assert.*;
 
@@ -23,7 +25,8 @@ public class BluetoothEventReceiverTest {
 
     @Before
     public void setUp() {
-        context = RuntimeEnvironment.getApplicationContext();
+        context = ApplicationProvider.getApplicationContext();
+        // context = RuntimeEnvironment.getApplicationContext();
         receiver = new BluetoothEventReceiver();
         SharedPrefsUtil.setDeviceName(context, "Device");
     }

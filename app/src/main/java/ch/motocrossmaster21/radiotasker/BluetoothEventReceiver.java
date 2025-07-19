@@ -1,8 +1,10 @@
 package ch.motocrossmaster21.radiotasker;
 
-import android.bluetooth.BluetoothAdapter;
+import android.Manifest;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+
+import androidx.annotation.RequiresPermission;
 import androidx.core.content.ContextCompat;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +13,7 @@ import android.util.Log;
 public class BluetoothEventReceiver extends BroadcastReceiver {
     private static final String TAG = "BluetoothReceiver";
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();

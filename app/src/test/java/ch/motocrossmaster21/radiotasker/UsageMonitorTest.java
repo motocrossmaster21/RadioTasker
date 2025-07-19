@@ -33,20 +33,25 @@ public class UsageMonitorTest {
         assertFalse(UsageMonitor.isAppRunning(context));
         UsageMonitor.reset();
         assertFalse(UsageMonitor.isAppRunning(context));
+
     }
 
     @Test
     public void testIsAppRunningTrue() {
         UsageMonitor.recordLaunch();
         Mockito.when(usm.queryEvents(Mockito.anyLong(), Mockito.anyLong())).thenReturn(events);
-        UsageEvents.Event event = new UsageEvents.Event();
-        event.setPackageName("test.app");
+        UsageEvents.Event event = Mockito.mock(UsageEvents.Event.class);
+        Mockito.when(event.getPackageName()).thenReturn("test.app");
         Mockito.when(events.hasNextEvent()).thenReturn(true, false);
+        UsageEvents.Event mockedEvent = Mockito.mock(UsageEvents.Event.class);
+        Mockito.when(mockedEvent.getPackageName()).thenReturn("test.app");
+
         Mockito.when(events.getNextEvent(Mockito.any())).thenAnswer(invocation -> {
-            UsageEvents.Event e = invocation.getArgument(0);
-            e.setPackageName("test.app");
+            UsageEvents.Event arg = invocation.getArgument(0);
+            Mockito.when(arg.getPackageName()).thenReturn(mockedEvent.getPackageName());
             return null;
         });
+
         SharedPrefsUtil.setPackageName(context, "test.app");
         assertTrue(UsageMonitor.isAppRunning(context));
     }

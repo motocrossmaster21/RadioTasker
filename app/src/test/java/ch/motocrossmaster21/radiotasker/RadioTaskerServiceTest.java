@@ -1,18 +1,13 @@
 package ch.motocrossmaster21.radiotasker;
 
-import android.app.Service;
-import android.content.Intent;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ServiceController;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
 public class RadioTaskerServiceTest {
