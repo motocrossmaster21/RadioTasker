@@ -36,7 +36,7 @@ public class CompanionManager {
             public void onDeviceFound(IntentSender chooserLauncher) {
                 try {
                     activity.startIntentSenderForResult(chooserLauncher, ASSOCIATE_REQUEST,
-                            null, 0, 0, 0);
+                            null, 0, 0, 0, null);
                 } catch (IntentSender.SendIntentException e) {
                     Log.e(TAG, "Failed to launch chooser", e);
                 }
