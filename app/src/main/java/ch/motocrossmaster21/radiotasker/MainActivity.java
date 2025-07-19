@@ -1,21 +1,28 @@
 package ch.motocrossmaster21.radiotasker;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.util.Log;
+import android.bluetooth.BluetoothDevice;
+import android.companion.CompanionDeviceManager;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import ch.motocrossmaster21.radiotasker.CompanionManager;
+
 public class MainActivity extends AppCompatActivity {
     private EditText deviceNameEditText;
     private EditText packageNameEditText;
+    private Button pairButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -25,11 +32,13 @@ public class MainActivity extends AppCompatActivity {
         deviceNameEditText = findViewById(R.id.deviceNameEditText);
         packageNameEditText = findViewById(R.id.packageNameEditText);
         Button saveButton = findViewById(R.id.saveButton);
+        pairButton = findViewById(R.id.pairButton);
 
         deviceNameEditText.setText(SharedPrefsUtil.getDeviceName(this));
         packageNameEditText.setText(SharedPrefsUtil.getPackageName(this));
 
         saveButton.setOnClickListener(v -> saveConfig());
+        pairButton.setOnClickListener(v -> startPairing());
 
         requestPermissionsIfNeeded();
     }
@@ -40,6 +49,22 @@ public class MainActivity extends AppCompatActivity {
         SharedPrefsUtil.setDeviceName(this, deviceName);
         SharedPrefsUtil.setPackageName(this, packageName);
         Toast.makeText(this, R.string.config_saved, Toast.LENGTH_SHORT).show();
+    }
+
+    private void startPairing() {
+        String deviceName = deviceNameEditText.getText().toString();
+        Log.d("MainActivity", "startPairing: " + deviceName);
+        CompanionManager.associateDevice(this, deviceName, new CompanionManager.AssociationListener() {
+            @Override
+            public void onAssociated() {
+                Toast.makeText(MainActivity.this, R.string.device_already_associated, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(CharSequence error) {
+                Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void requestPermissionsIfNeeded() {
@@ -55,6 +80,30 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[] {
                         android.Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE
                 }, 1002);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("MainActivity", "onActivityResult request=" + requestCode + " result=" + resultCode);
+        if (requestCode == CompanionManager.ASSOCIATE_REQUEST && resultCode == RESULT_OK && data != null) {
+            BluetoothDevice device;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                device = data.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE, BluetoothDevice.class);
+            } else {
+                device = data.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE);
+            }
+            if (device != null) {
+                Log.d("MainActivity", "Device selected: " + device.getName());
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    device.createBond();
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 1003);
+                }
             }
         }
     }
