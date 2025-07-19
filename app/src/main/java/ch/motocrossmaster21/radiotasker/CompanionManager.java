@@ -2,10 +2,12 @@ package ch.motocrossmaster21.radiotasker;
 
 import android.app.Activity;
 import android.companion.AssociationRequest;
+import android.companion.AssociationInfo;
 import android.companion.BluetoothDeviceFilter;
 import android.companion.CompanionDeviceManager;
 import android.content.Context;
 import android.content.IntentSender;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.regex.Pattern;
@@ -27,6 +29,16 @@ public class CompanionManager {
 
         Log.d(TAG, "associateDevice called with name: " + deviceName);
         Log.d(TAG, "Existing associations: " + cdm.getAssociations());
+
+        // Skip association if the device is already registered
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            for (AssociationInfo info : cdm.getAssociations()) {
+                if (deviceName.equals(info.getDisplayName())) {
+                    Log.d(TAG, "Device already associated: " + info.getDeviceMacAddress());
+                    return;
+                }
+            }
+        }
         BluetoothDeviceFilter filter = new BluetoothDeviceFilter.Builder()
                 .setNamePattern(Pattern.compile(Pattern.quote(deviceName)))
                 .build();
