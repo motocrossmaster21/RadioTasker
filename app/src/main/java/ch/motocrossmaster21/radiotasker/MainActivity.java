@@ -12,8 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
     private EditText deviceNameEditText;
     private EditText packageNameEditText;
 
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPrefsUtil.setDeviceName(this, deviceName);
         SharedPrefsUtil.setPackageName(this, packageName);
         Toast.makeText(this, R.string.config_saved, Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "Configuration saved: deviceName=" + deviceName + ", packageName=" + packageName);
     }
 
     private void requestPermissionsIfNeeded() {
