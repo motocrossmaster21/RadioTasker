@@ -23,6 +23,37 @@ public class CompanionManager {
     public static final int ASSOCIATE_REQUEST = 1001;
     private static final String TAG = "CompanionMgr";
 
+    /**
+     * Checks if the given device name is currently associated via the Companion Device API.
+     */
+    public static boolean isDeviceAssociated(Context context, String deviceName) {
+        if (context == null || deviceName == null) {
+            return false;
+        }
+        CompanionDeviceManager cdm =
+                (CompanionDeviceManager) context.getSystemService(Context.COMPANION_DEVICE_SERVICE);
+        if (cdm == null) {
+            return false;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            for (AssociationInfo info : cdm.getMyAssociations()) {
+                if (deviceName.equals(info.getDisplayName())) {
+                    return true;
+                }
+            }
+        } else {
+            for (String mac : cdm.getAssociations()) {
+                // getAssociations() only returns MAC addresses pre-Android 13.
+                // Caller should supply exact name match in this case.
+                if (deviceName.equals(mac)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static void associateDevice(Activity activity, String deviceName, @Nullable AssociationListener listener) {
         if (activity == null || deviceName == null) {
             return;

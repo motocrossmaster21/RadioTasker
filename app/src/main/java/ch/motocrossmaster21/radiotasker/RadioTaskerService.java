@@ -11,16 +11,20 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import android.util.Log;
 
 public class RadioTaskerService extends Service {
     private static final String CHANNEL_ID = "RadioTasker";
+    private static final String TAG = "RadioTaskSvc";
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "Service created");
         createNotificationChannel();
         startForeground(1, buildNotification());
         EnergyAppLauncher.launchApp(this);
+        Log.d(TAG, "Launch request sent");
     }
 
     @Nullable

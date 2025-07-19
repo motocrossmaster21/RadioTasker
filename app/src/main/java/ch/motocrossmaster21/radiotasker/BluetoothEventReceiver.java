@@ -17,6 +17,7 @@ public class BluetoothEventReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        Log.d(TAG, "Received action: " + action);
         if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             if (device != null) {
@@ -25,9 +26,11 @@ public class BluetoothEventReceiver extends BroadcastReceiver {
                     Log.d(TAG, "Target device connected: " + device.getName());
                     Intent serviceIntent = new Intent(context, RadioTaskerService.class);
                     ContextCompat.startForegroundService(context, serviceIntent);
+                    Log.d(TAG, "Foreground service requested");
                 }
             }
         } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+            Log.d(TAG, "Device disconnected");
             UsageMonitor.reset();
         }
     }
