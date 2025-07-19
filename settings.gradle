@@ -1,0 +1,2 @@
+rootProject.name = 'RadioTasker'
+include ':app'
