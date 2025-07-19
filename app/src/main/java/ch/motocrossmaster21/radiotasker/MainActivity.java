@@ -12,8 +12,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import android.util.Log;
+
+import ch.motocrossmaster21.radiotasker.SystemUtils;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
     private EditText deviceNameEditText;
     private EditText packageNameEditText;
 
@@ -35,12 +39,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveConfig() {
-        String deviceName = deviceNameEditText.getText().toString();
-        String packageName = packageNameEditText.getText().toString();
+        String deviceName = deviceNameEditText.getText().toString().trim();
+        String packageName = packageNameEditText.getText().toString().trim();
+
         SharedPrefsUtil.setDeviceName(this, deviceName);
         SharedPrefsUtil.setPackageName(this, packageName);
         Toast.makeText(this, R.string.config_saved, Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "Konfiguration gespeichert: deviceName=" + deviceName + ", packageName=" + packageName);
+
+        // Paketstatus prüfen und loggen
+        boolean pkgExists = SystemUtils.isPackageInstalled(getApplicationContext(), packageName);
+        Log.i(TAG, "Paket " + packageName + (pkgExists ? " ist installiert" : " ist nicht installiert"));
+        if (!pkgExists && !packageName.isEmpty()) {
+            Toast.makeText(this, "Warnung: Das Paket '" + packageName + "' ist nicht installiert.", Toast.LENGTH_SHORT).show();
+        }
+
+        // Gerätestatus prüfen und loggen
+        boolean deviceExists = SystemUtils.isPairedDevice(deviceName);
+        Log.i(TAG, "Gerät " + deviceName + (deviceExists ? " ist gekoppelt" : " ist nicht gekoppelt"));
+
+        if (!deviceExists && !deviceName.isEmpty()) {
+            String message = "Das Bluetooth-Gerät '" + deviceName + "' ist nicht gekoppelt. Bitte koppeln Sie es in den Bluetooth-Einstellungen.";
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "Warnung: Gerät '" + deviceName + "' ist nicht gekoppelt.");
+        }
     }
+
 
     private void requestPermissionsIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
