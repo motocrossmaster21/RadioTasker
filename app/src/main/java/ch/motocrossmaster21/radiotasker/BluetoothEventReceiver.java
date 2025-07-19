@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import ch.motocrossmaster21.radiotasker.SystemUtils;
+
 public class BluetoothEventReceiver extends BroadcastReceiver {
     private static final String TAG = "BluetoothReceiver";
 
@@ -24,6 +26,10 @@ public class BluetoothEventReceiver extends BroadcastReceiver {
                 Log.d(TAG, "Connected device name: " + device.getName());
                 String targetName = SharedPrefsUtil.getDeviceName(context);
                 Log.d(TAG, "Configured device name: " + targetName);
+                if (!SystemUtils.isPairedDevice(targetName)) {
+                    Log.w(TAG, "Configured device not paired: " + targetName);
+                    return;
+                }
                 if (targetName.equals(device.getName())) {
                     Log.i(TAG, "Target device connected: " + device.getName());
                     Intent serviceIntent = new Intent(context, RadioTaskerService.class);

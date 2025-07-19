@@ -14,6 +14,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.util.Log;
 
+import ch.motocrossmaster21.radiotasker.SystemUtils;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private EditText deviceNameEditText;
@@ -43,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
         SharedPrefsUtil.setPackageName(this, packageName);
         Toast.makeText(this, R.string.config_saved, Toast.LENGTH_SHORT).show();
         Log.i(TAG, "Configuration saved: deviceName=" + deviceName + ", packageName=" + packageName);
+
+        boolean pkgExists = SystemUtils.isPackageInstalled(this, packageName);
+        Log.i(TAG, "Package " + packageName + (pkgExists ? " is installed" : " not installed"));
+
+        boolean deviceExists = SystemUtils.isPairedDevice(deviceName);
+        Log.i(TAG, "Device " + deviceName + (deviceExists ? " is paired" : " not paired"));
     }
 
     private void requestPermissionsIfNeeded() {

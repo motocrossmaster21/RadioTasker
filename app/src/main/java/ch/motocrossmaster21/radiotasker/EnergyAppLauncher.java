@@ -5,12 +5,19 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import ch.motocrossmaster21.radiotasker.SystemUtils;
+
 public class EnergyAppLauncher {
     private static final String TAG = "EnergyAppLauncher";
 
     public static void launchApp(Context context) {
         String packageName = SharedPrefsUtil.getPackageName(context);
         Log.d(TAG, "Attempting to launch package: " + packageName);
+
+        if (!SystemUtils.isPackageInstalled(context, packageName)) {
+            Log.w(TAG, "Configured package not installed: " + packageName);
+            return;
+        }
 
         if (UsageMonitor.isAppRunning(context)) {
             Log.d(TAG, "Target app already running, skipping launch");
