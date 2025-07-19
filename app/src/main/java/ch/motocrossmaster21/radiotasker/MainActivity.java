@@ -54,7 +54,17 @@ public class MainActivity extends AppCompatActivity {
     private void startPairing() {
         String deviceName = deviceNameEditText.getText().toString();
         Log.d("MainActivity", "startPairing: " + deviceName);
-        CompanionManager.associateDevice(this, deviceName);
+        CompanionManager.associateDevice(this, deviceName, new CompanionManager.AssociationListener() {
+            @Override
+            public void onAssociated() {
+                Toast.makeText(MainActivity.this, R.string.device_already_associated, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(CharSequence error) {
+                Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void requestPermissionsIfNeeded() {

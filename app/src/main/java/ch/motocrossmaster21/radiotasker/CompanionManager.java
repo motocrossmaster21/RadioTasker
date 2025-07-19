@@ -10,13 +10,20 @@ import android.content.IntentSender;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import java.util.regex.Pattern;
 
 public class CompanionManager {
+    public interface AssociationListener {
+        void onAssociated();
+        void onFailure(CharSequence error);
+    }
+
     public static final int ASSOCIATE_REQUEST = 1001;
     private static final String TAG = "CompanionMgr";
 
-    public static void associateDevice(Activity activity, String deviceName) {
+    public static void associateDevice(Activity activity, String deviceName, @Nullable AssociationListener listener) {
         if (activity == null || deviceName == null) {
             return;
         }
@@ -24,6 +31,12 @@ public class CompanionManager {
                 (CompanionDeviceManager) activity.getSystemService(Context.COMPANION_DEVICE_SERVICE);
         if (cdm == null) {
             Log.e(TAG, "CompanionDeviceManager not available");
+            return;
+        }
+
+        if (!activity.getPackageManager().hasSystemFeature("android.software.companion_device_setup")) {
+            Log.w(TAG, "Companion Device feature not available");
+            if (listener != null) listener.onFailure("Feature not available");
             return;
         }
 
@@ -36,6 +49,7 @@ public class CompanionManager {
                         + ", MAC=" + info.getDeviceMacAddress());
                 if (deviceName.equals(info.getDisplayName())) {
                     Log.d(TAG, "Device already associated: " + info.getDeviceMacAddress());
+                    if (listener != null) listener.onAssociated();
                     return;
                 }
             }
@@ -63,12 +77,14 @@ public class CompanionManager {
                     Log.d(TAG, "Chooser launched");
                 } catch (IntentSender.SendIntentException e) {
                     Log.e(TAG, "Failed to launch chooser", e);
+                    if (listener != null) listener.onFailure(e.getMessage());
                 }
             }
 
             @Override
             public void onFailure(CharSequence error) {
                 Log.e(TAG, "Association failed: " + error);
+                if (listener != null) listener.onFailure(error);
             }
         }, null);
     }

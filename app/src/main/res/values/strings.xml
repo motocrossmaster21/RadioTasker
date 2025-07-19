@@ -4,4 +4,5 @@
     <string name="running">RadioTasker is running</string>
     <string name="config_saved">Configuration saved</string>
     <string name="pair_device">Pair Device</string>
+    <string name="device_already_associated">Device already associated</string>
 </resources>
