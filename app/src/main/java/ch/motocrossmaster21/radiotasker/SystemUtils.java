@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import java.util.Set;
 
@@ -19,11 +20,20 @@ public final class SystemUtils {
         if (packageName == null || packageName.isEmpty()) {
             return false;
         }
-        PackageManager pm = context.getPackageManager();
+
+        if (context == null) {
+            Log.w("SystemUtils", "Context is null!");
+            return false;
+        }
+
+        context = context.getApplicationContext();
+
         try {
-            pm.getPackageInfo(packageName, 0);
+            Log.d("SystemUtils", "Checking package: " + packageName);
+            context.getPackageManager().getPackageInfo(packageName, 0);
             return true;
         } catch (PackageManager.NameNotFoundException e) {
+            Log.w("SystemUtils", "Package not found: " + packageName);
             return false;
         }
     }
