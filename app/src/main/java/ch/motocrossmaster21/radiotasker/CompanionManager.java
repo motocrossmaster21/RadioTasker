@@ -28,15 +28,20 @@ public class CompanionManager {
         }
 
         Log.d(TAG, "associateDevice called with name: " + deviceName);
-        Log.d(TAG, "Existing associations: " + cdm.getAssociations());
 
-        // Skip association if the device is already registered
+        // Log existing associations and skip if the device is already registered
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            for (AssociationInfo info : cdm.getAssociations()) {
+            for (AssociationInfo info : cdm.getMyAssociations()) {
+                Log.d(TAG, "API33+ Association: name=" + info.getDisplayName()
+                        + ", MAC=" + info.getDeviceMacAddress());
                 if (deviceName.equals(info.getDisplayName())) {
                     Log.d(TAG, "Device already associated: " + info.getDeviceMacAddress());
                     return;
                 }
+            }
+        } else {
+            for (String mac : cdm.getAssociations()) {
+                Log.d(TAG, "API<33 Association MAC: " + mac);
             }
         }
         BluetoothDeviceFilter filter = new BluetoothDeviceFilter.Builder()

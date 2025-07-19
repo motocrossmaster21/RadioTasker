@@ -79,7 +79,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("MainActivity", "onActivityResult request=" + requestCode + " result=" + resultCode);
         if (requestCode == CompanionManager.ASSOCIATE_REQUEST && resultCode == RESULT_OK && data != null) {
-            BluetoothDevice device = data.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE);
+            BluetoothDevice device;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                device = data.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE, BluetoothDevice.class);
+            } else {
+                device = data.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE);
+            }
             if (device != null) {
                 Log.d("MainActivity", "Device selected: " + device.getName());
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
