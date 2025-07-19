@@ -70,15 +70,21 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
                     != PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "Requesting BLUETOOTH_CONNECT permission");
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
+            } else {
+                Log.d(TAG, "BLUETOOTH_CONNECT permission already granted");
             }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // Android 14
             if (checkSelfPermission(android.Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE) != PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "Requesting FOREGROUND_SERVICE_CONNECTED_DEVICE permission");
                 requestPermissions(new String[] {
                         android.Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE
                 }, 1002);
+            } else {
+                Log.d(TAG, "FOREGROUND_SERVICE_CONNECTED_DEVICE permission already granted");
             }
         }
     }
