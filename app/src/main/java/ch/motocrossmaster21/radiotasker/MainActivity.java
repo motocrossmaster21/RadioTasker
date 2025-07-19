@@ -7,15 +7,20 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.bluetooth.BluetoothDevice;
+import android.companion.CompanionDeviceManager;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import ch.motocrossmaster21.radiotasker.CompanionManager;
+
 public class MainActivity extends AppCompatActivity {
     private EditText deviceNameEditText;
     private EditText packageNameEditText;
+    private Button pairButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -25,11 +30,13 @@ public class MainActivity extends AppCompatActivity {
         deviceNameEditText = findViewById(R.id.deviceNameEditText);
         packageNameEditText = findViewById(R.id.packageNameEditText);
         Button saveButton = findViewById(R.id.saveButton);
+        pairButton = findViewById(R.id.pairButton);
 
         deviceNameEditText.setText(SharedPrefsUtil.getDeviceName(this));
         packageNameEditText.setText(SharedPrefsUtil.getPackageName(this));
 
         saveButton.setOnClickListener(v -> saveConfig());
+        pairButton.setOnClickListener(v -> startPairing());
 
         requestPermissionsIfNeeded();
     }
@@ -40,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
         SharedPrefsUtil.setDeviceName(this, deviceName);
         SharedPrefsUtil.setPackageName(this, packageName);
         Toast.makeText(this, R.string.config_saved, Toast.LENGTH_SHORT).show();
+    }
+
+    private void startPairing() {
+        String deviceName = deviceNameEditText.getText().toString();
+        CompanionManager.associateDevice(this, deviceName);
     }
 
     private void requestPermissionsIfNeeded() {
@@ -55,6 +67,17 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[] {
                         android.Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE
                 }, 1002);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CompanionManager.ASSOCIATE_REQUEST && resultCode == RESULT_OK && data != null) {
+            BluetoothDevice device = data.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE);
+            if (device != null) {
+                device.createBond();
             }
         }
     }
