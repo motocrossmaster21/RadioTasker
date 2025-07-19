@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import ch.motocrossmaster21.radiotasker.SystemUtils;
 
 public class BluetoothEventReceiver extends BroadcastReceiver {
     private static final String TAG = "BluetoothReceiver";

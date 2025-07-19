@@ -13,6 +13,10 @@ public class EnergyAppLauncher {
     public static void launchApp(Context context) {
         String packageName = SharedPrefsUtil.getPackageName(context);
         Log.d(TAG, "Attempting to launch package: " + packageName);
+        if (packageName.isEmpty()) {
+            Log.w(TAG, "No package name found in SharedPreferences!");
+            return;
+        }
 
         if (!SystemUtils.isPackageInstalled(context, packageName)) {
             Log.w(TAG, "Configured package not installed: " + packageName);

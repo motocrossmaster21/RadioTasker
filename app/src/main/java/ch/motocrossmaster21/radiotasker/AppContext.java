@@ -1,4 +1,18 @@
 package ch.motocrossmaster21.radiotasker;
 
-public class AppContext {
+import android.app.Application;
+import android.content.Context;
+
+public class AppContext extends Application {
+    private static Context applicationContext;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        AppContext.applicationContext = getApplicationContext();
+    }
+
+    public static Context get() {
+        return applicationContext;
+    }
 }
