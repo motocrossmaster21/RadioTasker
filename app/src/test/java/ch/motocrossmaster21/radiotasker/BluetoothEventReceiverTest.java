@@ -4,13 +4,14 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.Manifest;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.Shadows;
-import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowBluetoothDevice;
 import androidx.test.core.app.ApplicationProvider;
@@ -19,6 +20,7 @@ import androidx.test.core.app.ApplicationProvider;
 import static org.junit.Assert.*;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = 34)
 public class BluetoothEventReceiverTest {
     private Context context;
     private BluetoothEventReceiver receiver;
@@ -26,7 +28,8 @@ public class BluetoothEventReceiverTest {
     @Before
     public void setUp() {
         context = ApplicationProvider.getApplicationContext();
-        // context = RuntimeEnvironment.getApplicationContext();
+        ShadowApplication shadowApp = Shadows.shadowOf((android.app.Application) context);
+        shadowApp.grantPermissions(Manifest.permission.BLUETOOTH_CONNECT);
         receiver = new BluetoothEventReceiver();
         SharedPrefsUtil.setDeviceName(context, "Device");
     }
@@ -39,7 +42,7 @@ public class BluetoothEventReceiverTest {
         Intent intent = new Intent(BluetoothDevice.ACTION_ACL_CONNECTED);
         intent.putExtra(BluetoothDevice.EXTRA_DEVICE, device);
         receiver.onReceive(context, intent);
-        ShadowApplication shadowApp = Shadows.shadowOf(RuntimeEnvironment.getApplication());
+        ShadowApplication shadowApp = Shadows.shadowOf((android.app.Application) context);
         Intent service = shadowApp.getNextStartedService();
         assertNotNull(service);
         assertEquals(RadioTaskerService.class.getName(), service.getComponent().getClassName());

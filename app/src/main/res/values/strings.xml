@@ -5,4 +5,11 @@
     <string name="config_saved">Configuration saved</string>
     <string name="pair_device">Pair Device</string>
     <string name="device_already_associated">Device already associated</string>
+    <string name="select_paired_device">Select paired device</string>
+    <string name="no_paired_devices">No paired devices found</string>
+    <string name="select_launch_app">Select target app</string>
+    <string name="no_launchable_apps">No launchable apps found</string>
+    <string name="restart_option">Stop and restart app before launch</string>
+    <string name="ui_revision">UI rev 10</string>
+    <string name="notification_action_launch">Open app</string>
 </resources>

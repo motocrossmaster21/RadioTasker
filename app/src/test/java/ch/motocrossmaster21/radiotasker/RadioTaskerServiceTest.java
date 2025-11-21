@@ -5,11 +5,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 import org.robolectric.android.controller.ServiceController;
 
-import static org.mockito.Mockito.mock;
-
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = 34)
 public class RadioTaskerServiceTest {
     private ServiceController<RadioTaskerService> controller;
 
@@ -20,8 +20,7 @@ public class RadioTaskerServiceTest {
 
     @Test
     public void testOnCreateLaunchesApp() {
-        EnergyAppLauncher launcher = mock(EnergyAppLauncher.class);
-        // Not easy to inject; this test only ensures service starts without crash
+        // This validates the service lifecycle runs without throwing during onCreate.
         controller.create();
         controller.destroy();
     }

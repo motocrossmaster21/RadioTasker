@@ -21,8 +21,14 @@ public class UsageMonitor {
         if (!appLaunched) return false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             UsageStatsManager usm = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+            if (usm == null) {
+                return true;
+            }
             long time = System.currentTimeMillis();
             UsageEvents events = usm.queryEvents(time - 1000 * 5, time);
+            if (events == null) {
+                return true;
+            }
             UsageEvents.Event event = new UsageEvents.Event();
             String packageName = SharedPrefsUtil.getPackageName(context);
             while (events.hasNextEvent()) {
@@ -32,6 +38,6 @@ public class UsageMonitor {
                 }
             }
         }
-        return false;
+        return appLaunched;
     }
 }
